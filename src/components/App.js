@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import unsplash from "../unsplash";
 import ImageList from "./ImageList";
@@ -16,7 +16,7 @@ const App = () => {
 	const [term, setTerm] = useState("");
 	const [termChange, setTermChange] = useState(false);
 
-	const history = useHistory();
+	// const history = useHistory();
 
 	// const setHistory = (term) => {
 	// 	const params = new URLSearchParams();
@@ -40,7 +40,6 @@ const App = () => {
 
 	const onSearchSubmit = async () => {
 		// setHistory(term);
-
 		const response = await unsplash.get("/search/photos", {
 			params: { query: term, page: currentPage },
 		});
@@ -62,7 +61,7 @@ const App = () => {
 				</Toolbar>
 			</AppBar>
 			<main style={{ marginTop: "40px" }}>
-				<Container component="main" maxWidth="lg">
+				<Container component="main" maxWidth="sm">
 					<SearchBar handleSubmit={setTerm} />
 				</Container>
 
