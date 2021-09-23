@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import unsplash from "../unsplash";
-import ImageList from "./ImageList";
-import { AppBar, Container, Toolbar, Typography, Pagination } from "@mui/material";
+import ImageLists from "./ImageList";
+import { AppBar, Container, Toolbar, Typography, Pagination, Grid, Stack } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Footer from "./Footer";
 
 const theme = createTheme();
 
@@ -14,7 +15,8 @@ const App = () => {
 	const [pages, setPages] = useState(0);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [term, setTerm] = useState("");
-	const [termChange, setTermChange] = useState(false);
+	const [showPage, setShowPage] = useState(false);
+	const [noResult, setNoResult] = useState(false);
 
 	// const history = useHistory();
 
@@ -41,11 +43,20 @@ const App = () => {
 	const onSearchSubmit = async () => {
 		// setHistory(term);
 		const response = await unsplash.get("/search/photos", {
-			params: { query: term, page: currentPage },
+			params: { query: term, page: currentPage, per_page: 9 },
 		});
-
-		setImages(response.data.results);
-		setPages(response.data.total_pages);
+		if (term === "") {
+			setShowPage(false);
+			setNoResult(true);
+		} else if (response.data.results.length === 0) {
+			setNoResult(true);
+			setShowPage(false);
+		} else {
+			setImages(response.data.results);
+			setPages(response.data.total_pages);
+			setShowPage(true);
+			setNoResult(false);
+		}
 	};
 
 	const handleChangePage = (_, page) => {
@@ -54,45 +65,72 @@ const App = () => {
 
 	return (
 		<ThemeProvider theme={theme}>
-			<AppBar position="relative">
-				<Toolbar>
-					<PhotoCamera />
-					<Typography variant="h6">Photo Search</Typography>
-				</Toolbar>
-			</AppBar>
-			<main style={{ marginTop: "40px" }}>
-				<Container component="main" maxWidth="sm">
-					<SearchBar handleSubmit={setTerm} />
-				</Container>
-
-				<div style={{ backgroundColor: "palette.background.paper", padding: "spacing(8,0,6)" }}>
-					<Container maxWidth="sm">
-						<Typography variant="h2" align="center" color="textPrimary" gutterBottom>
-							Photo Album
-						</Typography>
-						<Typography variant="h5" align="center" color="textSecondary" paragraph>
-							Velit commodo dolore ullamco nulla elit exercitation non velit mollit eiusmod in ea veniam commodo.
-							Exercitation deserunt do ipsum pariatur tempor aute sit occaecat ullamco aute magna deserunt aute. Ullamco
-							duis aliqua ex cupidatat minim dolore cillum laborum ad magna nostrud. Non anim nostrud adipisicing ut
-							pariatur. Nostrud sunt nisi officia quis et qui veniam ea nostrud. Qui aute do amet consectetur
-							adipisicing in occaecat esse mollit officia elit.
-						</Typography>
-					</Container>
-				</div>
-				<Container style={{ padding: "20px 0" }} maxWidth="md">
-					<ImageList images={images} />
-					<Pagination count={pages} page={currentPage} onChange={handleChangePage} color="secondary" />
-				</Container>
-			</main>
-
-			<footer style={{ backgroundColor: "palette.background.paper", padding: "50px 0" }}>
-				<Typography variant="h6" align="center" gutterBottom>
-					Footer
-				</Typography>
-				<Typography variant="subtitle1" align="center" color="textSecondary">
-					Something here to give the footer a purpose!
-				</Typography>
-			</footer>
+			<Grid container>
+				<Grid item sm={12} xs={12} md={12} lg={12}>
+					<AppBar position="relative" style={{ backgroundColor: "#8FB0A9" }}>
+						<Toolbar>
+							<PhotoCamera sx={{ mr: 1 }} />
+							<Typography variant="h6">Sunsplash</Typography>
+						</Toolbar>
+					</AppBar>
+					<main>
+						<Container component="main" maxWidth="sm">
+							<SearchBar handleSubmit={setTerm} display="flex" />
+						</Container>
+						<Container maxWidth="sm">
+							<Typography variant="h2" align="center" color="textPrimary" style={{ fontSize: "2rem" }} gutterBottom>
+								Photo Album
+							</Typography>
+							<Typography
+								variant="h5"
+								align="center"
+								color="textSecondary"
+								paragraph
+								style={{ fontSize: "1.2rem" }}
+								guttuerBottom
+							>
+								Cat ipsum dolor sit amet, hopped up on catnip so intrigued by the shower purr as loud as possible, be
+								the most annoying cat that you can, and, knock everything off the table so soft kitty warm kitty little
+								ball of furr.
+							</Typography>
+							{showPage ? (
+								<>
+									<Container maxWidth="sm" mt={4}>
+										<Typography>Results of "{term}"</Typography>
+										<Grid container>
+											<ImageLists images={images} align="center" />
+											<Grid container>
+												<Grid item xs={12} sm={12} md={12}>
+													<Stack spacing={1} style={{ flexFlow: "row", justifyContent: "center" }}>
+														<Pagination
+															size="small"
+															count={pages}
+															page={currentPage}
+															onChange={handleChangePage}
+															color="standard"
+															variant="outlined"
+															siblingCount={1}
+														/>
+													</Stack>
+												</Grid>
+											</Grid>
+										</Grid>
+									</Container>
+								</>
+							) : term === "" && noResult ? (
+								""
+							) : noResult ? (
+								<Typography variant="h4" align="center" color="textPrimary" paragraph marginTop={5}>
+									You'd better search for another thing!
+								</Typography>
+							) : (
+								""
+							)}
+						</Container>
+					</main>
+					<Footer />
+				</Grid>
+			</Grid>
 		</ThemeProvider>
 	);
 };
