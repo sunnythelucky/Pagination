@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import ImageListItem from "@mui/material/ImageListItem";
 
 const ImageCard = (props) => {
@@ -20,12 +21,13 @@ const ImageCard = (props) => {
 	// };
 
 	const { urls, id, alt_description } = props.image;
+	const { term } = props;
 
 	const url = new URL(urls.raw);
 	const baseURL = url.protocol + "//" + url.hostname + url.pathname;
 
 	return (
-		<>
+		<Link to={`/photos/${term}/${id}`}>
 			{/* <div style={{ gridRowEnd: `span ${span}` }}>
 				<img ref={imageRef} alt={discription} src={urls.regular} />
 			</div> */}
@@ -38,7 +40,7 @@ const ImageCard = (props) => {
 					loading="lazy"
 				/>
 			</ImageListItem>
-		</>
+		</Link>
 	);
 };
 

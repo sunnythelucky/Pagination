@@ -1,23 +1,30 @@
 import * as React from "react";
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
+
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 
-class SearchBar extends React.Component {
-	state = { term: "" };
+const SearchBar = ({ handleSubmit }) => {
+	const history = useHistory();
+	const [term, setTerm] = useState("");
 
-	onFormSubmit = (event) => {
+	const onFormSubmit = (event) => {
 		event.preventDefault();
-
-		this.props.handleSubmit(this.state.term);
+		handleSubmit(term);
+		history.push(`/photos/${term}`);
+		setTerm("");
 	};
-	render() {
-		return (
+
+	return (
+		<Container component="main" maxWidth="sm">
 			<Box
 				component="form"
 				noValidate
-				onSubmit={this.onFormSubmit}
+				onSubmit={onFormSubmit}
 				sx={{
 					marginTop: 8,
 					display: "flex",
@@ -34,10 +41,8 @@ class SearchBar extends React.Component {
 							label="searchBar"
 							type="searchBar"
 							id="searchBar"
-							value={this.state.term}
-							onChange={(e) => {
-								this.setState({ term: e.target.value });
-							}}
+							value={term}
+							onChange={(e) => setTerm(e.target.value)}
 							size="small"
 						/>
 					</Grid>
@@ -48,8 +53,8 @@ class SearchBar extends React.Component {
 					</Grid>
 				</Grid>
 			</Box>
-		);
-	}
-}
+		</Container>
+	);
+};
 
 export default SearchBar;
