@@ -1,6 +1,6 @@
 #Sunsplash App
 
-Photo search app using React.js / Unsplash API
+Photo search app using React.js / Unsplash API / Material UI / Express.js
 
 # Getting Started with Create React App
 
